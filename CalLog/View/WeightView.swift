@@ -20,7 +20,7 @@ struct WeightView: View {
     @EnvironmentObject var myModel: MyModel
     @Query(sort: \WeightEntry.date, order: .reverse) var weightArr: [WeightEntry]
     
-    @State private var scrollPosition: Date = Date()
+    @State private var scrollPosition: String = ""
     @State private var showingAlert0 = false
     @State private var showingAlert1 = false
     @State private var target = ""
@@ -30,29 +30,30 @@ struct WeightView: View {
         NavigationStack{
             VStack{
                 HStack {
-                    Text(String(format:"몸무게 : %.1fkg", myModel.weight))
+                    Text(String(format:"몸무게 : %.1f kg", myModel.weight))
                         .font(.system(size: 25,weight: .bold))
                         .padding()
                     Spacer()
                 }
                 Chart{
-                    ForEach(weightArr.prefix(30), id: \.date) { item in
-                        LineMark(x: .value("Date", item.date, unit: .day),
+                    ForEach(weightArr.prefix(30).sorted(by: {$0.date < $1.date}), id: \.date) { item in
+                        LineMark(x: .value("Date", formattedDate(date: item.date)),
                                  y: .value("Weight", item.weight))
-                        PointMark(x: .value("Date", item.date, unit: .day),
+                        PointMark(x: .value("Date",formattedDate(date: item.date)),
                                   y: .value("Weight", item.weight))
+                        .annotation {
+                            Text(String(format:"%.1f", item.weight))
+                                .font(.system(size: 10, weight: .medium))
+                        }
                         if myModel.targetWeight > 0 {
                             RuleMark(y:.value("Target", myModel.targetWeight)).foregroundStyle(Color.red).lineStyle(StrokeStyle(lineWidth: 2, dash:[5]))
                                 .annotation(alignment:.trailing) {
-                                    Text(String(format:"%.1fkg", myModel.targetWeight))
+                                    Text(String(format:"%.1f kg", myModel.targetWeight))
                                         .foregroundStyle(Color.gray)
                                         .font(.system(size: 15))
                                 }
                         }
                     }
-                }
-                .chartXAxis{
-                    AxisMarks(values:.stride(by:.day))
                 }
                 .chartYAxis{
                     AxisMarks(values: .stride(by: 10))
@@ -66,7 +67,7 @@ struct WeightView: View {
                         Text("축하합니다! 당신의 노력이 결실을 맺었어요! 🎉")
                             .font(.headline)
                     }else{
-                        Text("목표까지 약 \(String(format:"%.1f",abs(myModel.weight - myModel.targetWeight)))kg 남았습니다")
+                        Text("목표까지 약 \(String(format:"%.1f",abs(myModel.weight - myModel.targetWeight))) kg 남았습니다")
                             .font(.body)
                             .foregroundStyle(Color.gray)
                     }
@@ -122,7 +123,11 @@ struct WeightView: View {
                 }
                 
                 //그래프 위치를 우측으로 고정하기 위해
-                scrollPosition = Calendar.current.date(byAdding: .day, value: +1, to: weightArr.first?.date ?? Date())!
+                if let firstPosition = weightArr.first?.date {
+                    scrollPosition = formattedDate(date: firstPosition)
+                }else{
+                    scrollPosition = formattedDate(date: Date())
+                }
             }
             .alert("목표 몸무게",isPresented:$showingAlert0){
                 TextField("입력",text: $target)
@@ -163,6 +168,11 @@ struct WeightView: View {
             }
         }
     }
+    func formattedDate(date: Date) -> String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM/dd"
+            return formatter.string(from: date)
+        }
 }
 
 

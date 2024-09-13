@@ -11,7 +11,7 @@ struct AgeGenderSetupView: View {
     
     @Binding var age: String
     @Binding var gender: String
-    let genders = ["남성", "여성", "그 외"]
+    let genders = ["남성", "여성"]
     
     var body: some View {
         VStack(alignment:.leading,spacing: 15){

@@ -13,15 +13,27 @@ struct CalLogApp: App {
     
     @StateObject private var myModel = MyModel()
     @AppStorage("onboarding") private var onboarding = true
+    @State private var showSplash = true
 
     var body: some Scene {
         WindowGroup {
-            if onboarding{
-                OnboardingTabView(onboarding: $onboarding)
-                    .environmentObject(myModel)
+            if showSplash {
+                SplashView()
+                    .onAppear{
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2){
+                            withAnimation {
+                                showSplash = false
+                            }
+                        }
+                    }
             }else{
-                ContentView()
-                    .environmentObject(myModel)
+                if onboarding{
+                    OnboardingTabView(onboarding: $onboarding)
+                        .environmentObject(myModel)
+                }else{
+                    ContentView()
+                        .environmentObject(myModel)
+                }
             }
         }
         .modelContainer(for: [WeightEntry.self, CalorieData.self, Food.self])

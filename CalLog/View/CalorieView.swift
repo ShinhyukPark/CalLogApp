@@ -40,18 +40,18 @@ struct CalorieView: View {
                 let recentCalories = caloriArr.prefix(7).map{$0.calorie}
                 let totalCalories = recentCalories.reduce(0, +)
                 let averageCalories = Int(totalCalories) / dayCount
-                Text("칼로리 : \(Int(myModel.calorie))Kcal")
+                Text("칼로리 : \(Int(myModel.calorie)) Kcal")
                     .font(.system(size: 25,weight: .bold))
                     .padding()
                 caloriArr.count == 0 ? Text("   + 버튼으로 음식을 추가해주세요.")
                     .font(.system(size: 15))
                     .foregroundStyle(Color.gray) :
-                Text("최근 칼로리 평균: \(Int(averageCalories))Kcal")
+                Text("최근 칼로리 평균: \(Int(averageCalories)) Kcal")
                     .font(.system(size: 15))
                     .foregroundStyle(Color.gray)
                 Chart{
-                    ForEach(caloriArr.prefix(7), id: \.date){ item in
-                        BarMark(x: .value("Date", item.date,unit: .day), y:.value("Calorie", item.calorie))
+                    ForEach(caloriArr.suffix(7), id: \.date){ item in
+                        BarMark(x: .value("Date",formattedDate(date: item.date)), y:.value("Calorie", item.calorie))
                             .annotation {
                                 Text("\(Int(item.calorie))")
                                     .font(.system(size: 12, weight: .medium))
@@ -61,9 +61,6 @@ struct CalorieView: View {
                         }
                         
                     }
-                }
-                .chartXAxis{
-                    AxisMarks(values:.stride(by:.day))
                 }
                 .frame(height:150)
                 if myModel.targetCalorie > 0 {
@@ -131,7 +128,7 @@ struct CalorieView: View {
                             Text(item.food)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer(minLength: 30)
-                            Text(String(format:"%.1fKcal", item.calorie))
+                            Text("\(Int(item.calorie)) Kcal")
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                         .padding(.vertical,8)
@@ -195,6 +192,11 @@ struct CalorieView: View {
             }
         }
     }
+    func formattedDate(date: Date) -> String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM/dd"
+            return formatter.string(from: date)
+        }
 }
 
 

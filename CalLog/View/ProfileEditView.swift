@@ -47,9 +47,6 @@ struct ProfileEditView: View {
                 Text("성별").font(.headline)
                 Spacer()
                 Menu{
-                    Button("그 외"){
-                        gender = "그 외"
-                    }
                     Button("여성"){
                         gender = "여성"
                     }
