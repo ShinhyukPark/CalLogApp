@@ -37,7 +37,7 @@ struct CalorieView: View {
     var body: some View {
         NavigationStack{
             VStack(alignment:.leading){
-                let recentCalories = caloriArr.prefix(7).map{$0.calorie}
+                let recentCalories = caloriArr.suffix(7).map{$0.calorie}
                 let totalCalories = recentCalories.reduce(0, +)
                 let averageCalories = Int(totalCalories) / dayCount
                 Text("칼로리 : \(Int(myModel.calorie)) Kcal")
