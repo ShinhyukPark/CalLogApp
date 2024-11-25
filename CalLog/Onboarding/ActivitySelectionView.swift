@@ -26,6 +26,9 @@ struct ActivitySelectionView: View {
                 Button(action: {
                     selectedActivityName = level
                     activityName = saveActivity()
+                     if let index = activityNames.firstIndex(of: level) {
+                        activityLevel = activityLevels[index]
+                    }
                 }) {
                     Text(level)
                         .padding()
