@@ -50,7 +50,7 @@ struct CalorieView: View {
                     .font(.system(size: 15))
                     .foregroundStyle(Color.gray)
                 Chart{
-                    ForEach(caloriArr.suffix(7), id: \.date){ item in
+                    ForEach(caloriArr.sorted(by: { $0.date < $1.date}).suffix(7), id: \.date){ item in
                         BarMark(x: .value("Date",formattedDate(date: item.date)), y:.value("Calorie", item.calorie))
                             .annotation {
                                 Text("\(Int(item.calorie))")
